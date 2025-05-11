@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${#strings.isEmpty(producto.id) ? 'Crear' : 'Editar'} + ' Producto'"></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-..." crossorigin="anonymous">
+    <link rel="stylesheet" th:href="@{/css/custom.css}">
+</head>
+<body>
+<div class="container py-4">
+    <!-- Título centrado -->
+    <h2 class="text-center mb-4"
+        th:text="${#strings.isEmpty(producto.id) ? 'Nuevo Producto' : 'Editar Producto'}">
+    </h2>
+
+    <!-- Formulario centrado en ancho medio -->
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6">
+
+            <!-- Mensaje global de error (p.ej. nombre duplicado) -->
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+            <form th:action="@{/productosAdmin/guardar}" th:object="${producto}" method="post" enctype="multipart/form-data">
+
+                <!-- Mantener id en edición -->
+                <input type="hidden" th:field="*{id}" />
+
+                <!-- Nombre -->
+                <div th:if="${#fields.hasErrors('nombre')}" class="alert alert-danger">
+                    <ul>
+                        <li th:each="err : ${#fields.errors('nombre')}" th:text="${err}">Error nombre</li>
+                    </ul>
+                </div>
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre</label>
+                    <input type="text" id="nombre" class="form-control" th:field="*{nombre}" placeholder="Nombre del producto" />
+                </div>
+
+                <!-- Descripción -->
+                <div th:if="${#fields.hasErrors('descripcion')}" class="alert alert-danger">
+                    <ul>
+                        <li th:each="err : ${#fields.errors('descripcion')}" th:text="${err}">Error descripción</li>
+                    </ul>
+                </div>
+                <div class="mb-3">
+                    <label for="descripcion" class="form-label">Descripción</label>
+                    <textarea id="descripcion" class="form-control" th:field="*{descripcion}" placeholder="Descripción del producto" rows="3"></textarea>
+                </div>
+
+                <!-- Precio -->
+                <div th:if="${#fields.hasErrors('precio')}" class="alert alert-danger">
+                    <ul>
+                        <li th:each="err : ${#fields.errors('precio')}" th:text="${err}">Error precio</li>
+                    </ul>
+                </div>
+                <div class="mb-3">
+                    <label for="precio" class="form-label">Precio</label>
+                    <input type="number" step="0.5" id="precio" class="form-control" th:field="*{precio}" placeholder="0.00" />
+                </div>
+
+                <!-- Imagen -->
+                <div th:if="${#fields.hasErrors('imagen')}" class="alert alert-danger">
+                    <ul>
+                        <li th:each="err : ${#fields.errors('imagen')}" th:text="${err}">Error imagen</li>
+                    </ul>
+                </div>
+                <div class="mb-3">
+                    <label for="imagen" class="form-label">URL de la imagen</label>
+                    <input type="url"
+                           id="imagen"
+                           class="form-control"
+                           th:field="*{imagen}"
+                           placeholder="https://ejemplo.com/mi-foto.jpg"/>
+                </div>
+
+                <!-- Stock -->
+                <div th:if="${#fields.hasErrors('stock')}" class="alert alert-danger">
+                    <ul>
+                        <li th:each="err : ${#fields.errors('stock')}" th:text="${err}">Error stock</li>
+                    </ul>
+                </div>
+                <div class="mb-3">
+                    <label for="stock" class="form-label">Stock</label>
+                    <input type="number" id="stock" class="form-control" th:field="*{stock}" placeholder="Cantidad en stock" />
+                </div>
+
+                <!-- Select de Material -->
+                <div th:if="${#fields.hasErrors('material')}" class="alert alert-danger">
+                    <ul>
+                        <li th:each="err : ${#fields.errors('material')}" th:text="${err}">Error material</li>
+                    </ul>
+                </div>
+                <div class="mb-3">
+                    <label for="material" class="form-label">Material</label>
+                    <select id="material"
+                            class="form-select"
+                            th:field="*{material}">
+                        <option value="" disabled selected>-- Selecciona material --</option>
+                        <option th:each="mat : ${materiales}"
+                                th:value="${mat.id}"
+                                th:text="${mat.nombre}"></option>
+                    </select>
+                </div>
+
+                <!-- Select de Categoria -->
+                <div th:if="${#fields.hasErrors('categoria')}" class="alert alert-danger">
+                    <ul>
+                        <li th:each="err : ${#fields.errors('categoria')}" th:text="${err}">Error categoría</li>
+                    </ul>
+                </div>
+                <div class="mb-3">
+                    <label for="categoria" class="form-label">Categoría</label>
+                    <select id="categoria"
+                            class="form-select"
+                            th:field="*{categoria}">
+                        <option value="" disabled selected>-- Selecciona categoría --</option>
+                        <option th:each="cat : ${categorias}"
+                                th:value="${cat.id}"
+                                th:text="${cat.nombre}"></option>
+                    </select>
+                </div>
+
+                <!-- Botones Guardar y Cancelar -->
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <a th:href="@{/productosAdmin}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-..." crossorigin="anonymous"></script>
+</body>
+</html>

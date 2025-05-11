@@ -32,3 +32,24 @@ ALTER TABLE carrito
 -- para evitar que alguien cree órdenes sin total
 ALTER TABLE orden
   ALTER COLUMN total_orden SET NOT NULL;
+
+///////////////////////////
+
+-- Impone la restricción NOT NULL
+ALTER TABLE producto
+  ALTER COLUMN descripcion_producto SET NOT NULL,
+  ALTER COLUMN imagen_producto    SET NOT NULL;
+
+-- Quita el antiguo constraint
+ALTER TABLE usuario
+  DROP CONSTRAINT IF EXISTS usuario_rol_usuario_check;
+
+-- Crea uno nuevo que acepte ADMIN y CLIENTE
+ALTER TABLE usuario
+  ADD CONSTRAINT usuario_rol_usuario_check
+    CHECK (rol_usuario IN ('ADMIN','CLIENTE'));
+
+-- Establece 'CLIENTE' como valor por defecto
+ALTER TABLE usuario
+  ALTER COLUMN rol_usuario SET DEFAULT 'CLIENTE';
+

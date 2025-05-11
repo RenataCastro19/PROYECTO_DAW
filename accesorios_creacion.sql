@@ -1,20 +1,17 @@
 -- BD JOYERIA PROYECTO FINAL DAW
-
 -- Tabla de materiales
 CREATE TABLE material (
     ID_material SERIAL PRIMARY KEY,
     nombre_material VARCHAR(100) NOT NULL
 );
-CREATE TYPE nombre_completo AS (
-    nombre VARCHAR(100),
-    ap_pat VARCHAR(100),
-    ap_mat VARCHAR(100)
-);
+
 
 -- Tabla de usuarios
 CREATE TABLE usuario (
     ID_usuario SERIAL PRIMARY KEY,
-    nombre_completo nombre_completo NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    ap_pat VARCHAR(100) NOT NULL,
+    ap_mat VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     contrasenia TEXT NOT NULL,
     rol_usuario VARCHAR(20) CHECK (rol_usuario IN ('admin', 'cliente')) NOT NULL

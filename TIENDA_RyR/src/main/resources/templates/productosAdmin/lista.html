@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Listado de Productos</title>
+  <!-- Bootstrap y estilos personalizados -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-..."
+        crossorigin="anonymous">
+  <link rel="stylesheet" th:href="@{/css/custom.css}">
+</head>
+<body>
+<div class="container py-4">
+  <h2 class="text-center mb-4">Productos</h2>
+  <div class="text-center mb-3">
+    <a th:href="@{/productosAdmin/nuevo}" class="btn btn-success mb-3">Nuevo Producto</a>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover">
+      <thead>
+      <tr>
+        <th>ID</th><th>Nombre</th><th>Descripción</th><th>Imagen</th>
+        <th>Precio</th><th>Stock</th><th>Material</th><th>Categoría</th><th>Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="prod : ${productos}">
+        <td th:text="${prod.id}">1</td>
+        <td th:text="${prod.nombre}">Nombre</td>
+        <td th:text="${#strings.abbreviate(prod.descripcion, 30)}">Descripción…</td>
+
+        <!-- Imagen con modal -->
+        <td class="product-thumbnail-container">
+          <a href="#"
+             data-bs-toggle="modal"
+             data-bs-target="#imageModal"
+             th:data-bs-image-url="@{${prod.imagen}}">
+            <img th:src="@{${prod.imagen}}"
+                 alt="Imagen"
+                 class="product-thumbnail"/>
+          </a>
+        </td>
+
+        <td th:text="${prod.precio}">0.00</td>
+        <td th:text="${prod.stock}">0</td>
+        <td th:text="${prod.material.nombre}">Material</td>
+        <td th:text="${prod.categoria.nombre}">Categoría</td>
+        <td>
+          <a th:href="@{|/productosAdmin/editar/${prod.id}|}"
+             class="btn btn-primary btn-sm">Editar</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="text-center mt-3">
+    <a th:href="@{/}" class="btn btn-secondary">Volver al inicio</a>
+  </div>
+</div>
+
+<!-- Modal para ver imagen agrandada -->
+<div class="modal fade" id="imageModal" tabindex="-1"
+     aria-labelledby="imageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-transparent border-0">
+      <div class="modal-body text-center p-0">
+        <img id="modalImage"
+             src=""
+             class="img-fluid rounded"
+             alt="Imagen grande"/>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS (solo una vez) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-..."
+        crossorigin="anonymous"></script>
+<script>
+  const imageModal = document.getElementById('imageModal');
+  imageModal.addEventListener('show.bs.modal', event => {
+    const trigger = event.relatedTarget;
+    const imageUrl = trigger.getAttribute('data-bs-image-url');
+    const modalImage = imageModal.querySelector('#modalImage');
+    modalImage.src = imageUrl;
+  });
+</script>
+</body>
+</html>

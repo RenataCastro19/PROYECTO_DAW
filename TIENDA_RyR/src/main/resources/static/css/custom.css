@@ -1,0 +1,87 @@
+:root {
+    /* Paleta de colores */
+    --brand-black:   #0D0000;
+    --brand-gold:    #B88917;
+    --brand-white:   #F5F5F5;
+    --brand-gray:    #464646;
+    --brand-beige:   #D9D2CC;
+    --brand-brown:   #463f3a;
+    --brand-red:     #540b0e;
+}
+
+/* Fondo general y tipografía */
+body {
+    background-color: var(--brand-white);
+    color: var(--brand-gray);
+    font-family: "Segoe UI", Roboto, sans-serif;
+}
+
+/* Barra de navegación */
+.navbar {
+    background-color: var(--brand-black) !important;
+}
+.navbar-brand,
+.nav-link {
+    color: var(--brand-white) !important;
+}
+
+/* Botones personalizados */
+.btn-primary {
+    background-color: var(--brand-brown) !important;
+    border-color: var(--brand-brown) !important;
+    border-radius: 1.5rem; /* esquinas más redondeadas */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+.btn-secondary {
+    background-color: var(--brand-gray) !important;
+    border-color: var(--brand-gray) !important;
+    color: var(--brand-white) !important;
+}
+
+.btn-success {
+    background-color: var(--brand-red) !important;
+    border-color:     var(--brand-red) !important;
+    color:            var(--brand-white) !important;
+}
+
+/* Tablas con encabezado destacado */
+.table thead th {
+    background-color: var(--brand-gold);
+    color: var(--brand-black);
+    border: none;
+}
+.table {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.table tbody tr {
+    background-color: var(--brand-white);
+}
+
+/* Alertas suaves */
+.alert-danger {
+    background-color: var(--brand-beige);
+    color: var(--brand-gray);
+    border: none;
+}
+
+/* Inputs y formularios */
+.form-control {
+    border-radius: 0.75rem;
+}
+
+/* Imágenes de producto en lista */
+.product-thumbnail {
+    max-width: 80px;
+    max-height: 50px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+/* Contenedor para centrar imagen */
+.product-thumbnail-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
