@@ -44,4 +44,5 @@ public class WebConfig implements WebMvcConfigurer {
         // Registramos categoriaFormatter para campos de tipo Categoria
         registry.addFormatter(categoriaFormatter);
     }
+
 }

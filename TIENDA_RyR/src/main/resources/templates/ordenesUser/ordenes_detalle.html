@@ -1,0 +1,25 @@
+<!-- src/main/resources/templates/PerfilUser/pedidos_detalle.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"/><title>Detalle de Pedido</title></head>
+<body>
+<div th:replace="fragments/header :: header"/>
+<div class="container py-5">
+    <h2>Detalle de Pedido</h2>
+    <table class="table">
+        <thead><tr>
+            <th>Producto</th><th>Cantidad</th><th>Precio Unitario</th><th>Subtotal</th>
+        </tr></thead>
+        <tbody>
+        <tr th:each="d : ${detalles}">
+            <td th:text="${d.producto.nombre}">Nombre</td>
+            <td th:text="${d.cantidadItems}">1</td>
+            <td th:text="|${#numbers.formatDecimal(d.precioUnitario,1,'COMMA',2,'POINT')} MXN|">0.00</td>
+            <td th:text="|${#numbers.formatDecimal(d.precioUnitario * d.cantidadItems,1,'COMMA',2,'POINT')} MXN|">0.00</td>
+        </tr>
+        </tbody>
+    </table>
+    <a th:href="@{/perfil/pedidos}" class="btn btn-secondary mt-4">← Volver</a>
+</div>
+</body>
+</html>

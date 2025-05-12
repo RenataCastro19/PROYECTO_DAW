@@ -1,0 +1,22 @@
+<!-- src/main/resources/templates/PerfilUser/pedidos.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"/><title>Mis Pedidos</title></head>
+<body>
+<div th:replace="fragments/header :: header"/>
+<div class="container py-5">
+    <h2>Mis Pedidos</h2>
+    <ul class="list-group">
+        <li class="list-group-item"
+            th:each="o : ${ordenes}">
+            <span th:text="${o.id}">#1</span> —
+            <span th:text="${#dates.format(o.fecha,'dd/MM/yyyy HH:mm')}">...</span> —
+            <span th:text="${#numbers.formatDecimal(o.totalOrden,1,'COMMA',2,'POINT')}">0.00</span> MXN
+            <a th:href="@{/perfil/pedidos/{id}/detalle(id=${o.id})}"
+               class="btn btn-sm btn-link">Ver Detalle</a>
+        </li>
+    </ul>
+    <a th:href="@{/perfil}" class="btn btn-secondary mt-4">← Volver</a>
+</div>
+</body>
+</html>

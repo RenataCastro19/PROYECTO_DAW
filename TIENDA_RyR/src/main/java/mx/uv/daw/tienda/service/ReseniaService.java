@@ -1,7 +1,11 @@
 package mx.uv.daw.tienda.service;
 
-import org.springframework.stereotype.Service;
+import mx.uv.daw.tienda.model.Resenia;
+import java.util.List;
 
-@Service
-public class ReseniaService {
+public interface ReseniaService {
+    List<Resenia> listarPorProducto(Long productoId);
+    Resenia guardar(Resenia resenia);
+    List<Resenia> listarPorUsuarioEmail(String email);
+
 }

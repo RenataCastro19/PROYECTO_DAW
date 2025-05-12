@@ -47,21 +47,26 @@ public class SecurityConfig {
 
                 // Definición de qué URLs van abiertas y cuáles protegidas
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/index", "/register", "/css/**", "/js/**", "/images/**",
-                        "/materialesAdmin", "/materialesAdmin/**",
-                                "/categoriasAdmin", "/categoriasAdmin/**",
-                                "/productosAdmin", "/productosAdmin/**")
-                        .permitAll()
-                        .requestMatchers("/admin/**")
-                        .hasRole("ADMIN")
-                        .anyRequest()
-                        .hasRole("CLIENTE")
+                        // Páginas públicas y recursos estáticos
+                        .requestMatchers(
+                                "/", "/index", "/tienda", "/register",
+                                "/css/**", "/js/**", "/images/**", "/webjars/**"
+                        ).permitAll()
+
+                        // Rutas de administración → solo ADMIN
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                        // Rutas de carrito → solo CLIENTE
+                        .requestMatchers("/carrito/**").hasRole("CLIENTE")
+
+                        // Cualquier otra petición → CLIENTE
+                        .anyRequest().hasRole("CLIENTE")
                 )
 
                 // Configuración del formulario de login
                 .formLogin(form -> form
-                        .loginPage("/login")               // tu Thymeleaf en /login
-                        .loginProcessingUrl("/login")      // URL que procesa el POST de credenciales
+                        .loginPage("/login")               // Thymeleaf en /login
+                        .loginProcessingUrl("/login")      // POST de credenciales
                         .successHandler(authenticationSuccessHandler())
                         .failureUrl("/login?error=true")   // en caso de error vuelve con ?error
                         .permitAll()
@@ -72,10 +77,7 @@ public class SecurityConfig {
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout=true")
                         .permitAll()
-                )
-
-        // CSRF activo por defecto
-        ;
+                );
 
         return http.build();
     }
@@ -91,7 +93,8 @@ public class SecurityConfig {
                     throws IOException, ServletException {
                 boolean isAdmin = authentication.getAuthorities().stream()
                         .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-                String target = isAdmin ? "/admin/dashboard" : "/tienda";
+                // ADMIN → /admin/dashboard, CLIENTE → página pública /
+                String target = isAdmin ? "/admin/dashboard" : "/";
                 response.sendRedirect(request.getContextPath() + target);
             }
         };

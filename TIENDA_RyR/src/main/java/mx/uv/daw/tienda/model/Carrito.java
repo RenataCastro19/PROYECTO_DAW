@@ -38,7 +38,6 @@ public class Carrito {
             return Objects.hash(usuarioId, productoId);
         }
 
-        // getters y setters
         public Long getUsuarioId() { return usuarioId; }
         public void setUsuarioId(Long usuarioId) { this.usuarioId = usuarioId; }
         public Long getProductoId() { return productoId; }
@@ -54,7 +53,7 @@ public class Carrito {
     private Usuario usuario;
 
     @MapsId("productoId")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "r_producto", nullable = false)
     private Producto producto;
 
@@ -75,24 +74,19 @@ public class Carrito {
         this.estado = estado;
     }
 
-    // getters y setters
     public CarritoId getId() { return id; }
     public void setId(CarritoId id) { this.id = id; }
-
     public Usuario getUsuario() { return usuario; }
     public void setUsuario(Usuario usuario) { this.usuario = usuario; }
-
     public Producto getProducto() { return producto; }
     public void setProducto(Producto producto) { this.producto = producto; }
-
     public Integer getCantidad() { return cantidad; }
     public void setCantidad(Integer cantidad) { this.cantidad = cantidad; }
-
     public EstadoCarrito getEstado() { return estado; }
     public void setEstado(EstadoCarrito estado) { this.estado = estado; }
 
     public enum EstadoCarrito {
-        ACTIVO,
-        COMPRADO
+        activo,
+        comprado
     }
 }

@@ -1,7 +1,6 @@
 package mx.uv.daw.tienda.service;
 
 import jakarta.validation.ValidationException;
-import mx.uv.daw.tienda.dto.RegistroForm;
 import mx.uv.daw.tienda.model.RolUsuario;
 import mx.uv.daw.tienda.model.Usuario;
 import mx.uv.daw.tienda.repository.UsuarioRepository;
@@ -12,7 +11,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +23,7 @@ public class UsuarioService implements UserDetailsService {
     public UsuarioService(UsuarioRepository usuarioRepository,
                           PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.passwordEncoder    = passwordEncoder;
     }
 
     @Transactional(readOnly = true)
@@ -53,25 +51,21 @@ public class UsuarioService implements UserDetailsService {
         usuarioRepository.deleteById(id);
     }
 
+    /**
+     * Registra un nuevo cliente usando directamente la entidad Usuario.
+     * Valida unicidad de email y coincidencia de contraseñas.
+     */
     @Transactional
-    public void registrarCliente(RegistroForm form) {
-        // Validaciones
-        if (usuarioRepository.findByEmail(form.getEmail()).isPresent()) {
+    public void registrarCliente(Usuario u) {
+        if (usuarioRepository.findByEmail(u.getEmail()).isPresent()) {
             throw new ValidationException("Ya existe un usuario con ese email");
         }
-        if (!form.getPassword().equals(form.getConfirmPassword())) {
+        if (!u.getContrasenia().equals(u.getConfirmPassword())) {
             throw new ValidationException("Las contraseñas no coinciden");
         }
 
-        // Construcción de la entidad Usuario con campos independientes
-        Usuario u = new Usuario();
-        u.setNombre(form.getNombre());
-        u.setApPat(form.getApPat());
-        u.setApMat(form.getApMat());
-        u.setEmail(form.getEmail());
-        u.setContrasenia(passwordEncoder.encode(form.getPassword()));
+        u.setContrasenia(passwordEncoder.encode(u.getContrasenia()));
         u.setRolUsuario(RolUsuario.CLIENTE);
-
         usuarioRepository.save(u);
     }
 
@@ -83,7 +77,6 @@ public class UsuarioService implements UserDetailsService {
                 .orElseThrow(() ->
                         new UsernameNotFoundException("Usuario no encontrado: " + email)
                 );
-
         return User.builder()
                 .username(u.getEmail())
                 .password(u.getContrasenia())

@@ -1,7 +1,8 @@
 package mx.uv.daw.tienda.service;
 
-import org.springframework.stereotype.Service;
+import mx.uv.daw.tienda.model.Orden;
+import java.util.List;
 
-@Service
-public class OrdenService {
+public interface OrdenService {
+    List<Orden> listarPorUsuarioEmail(String email);
 }

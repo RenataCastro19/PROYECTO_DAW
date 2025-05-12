@@ -1,7 +1,8 @@
 package mx.uv.daw.tienda.service;
 
-import org.springframework.stereotype.Service;
+import mx.uv.daw.tienda.model.DetalleOrden;
+import java.util.List;
 
-@Service
-public class DetalleOrdenService {
+public interface DetalleOrdenService {
+    List<DetalleOrden> listarPorOrdenId(Long ordenId);
 }

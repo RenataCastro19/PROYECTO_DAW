@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Tu Carrito</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          rel="stylesheet" crossorigin="anonymous"/>
+    <link rel="stylesheet" th:href="@{/css/custom.css}"/>
+</head>
+<body>
+<div class="container py-4">
+
+    <h2 class="text-center mb-4">Tu Carrito</h2>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Precio unitario</th>
+                        <th>Subtotal</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${items}">
+                        <td th:text="${item.producto.nombre}">Nombre</td>
+                        <td>
+                            <form th:action="@{/carrito/actualizar}" method="post" class="d-flex">
+                                <input type="hidden" name="idProducto" th:value="${item.producto.id}"/>
+                                <input type="number"
+                                       name="cantidad"
+                                       th:value="${item.cantidad}"
+                                       min="1"
+                                       class="form-control form-control-sm me-2"
+                                       style="width: 5rem;"/>
+                                <button class="btn btn-sm btn-secondary" type="submit">Actualizar</button>
+                            </form>
+                        </td>
+                        <td th:text="|${#numbers.formatDecimal(item.producto.precio,1,'COMMA',2,'POINT')} MXN|">
+                            0.00 MXN
+                        </td>
+                        <td th:text="|${#numbers.formatDecimal(item.producto.precio * item.cantidad,1,'COMMA',2,'POINT')} MXN|">
+                            0.00 MXN
+                        </td>
+                        <td>
+                            <a th:href="@{/carrito/eliminar/{idProducto}(idProducto=${item.producto.id})}"
+                               class="btn btn-sm btn-danger">
+                                Eliminar
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-end mt-4 align-items-baseline">
+                <h5 class="me-3">Total:</h5>
+                <h4 class="text-danger"
+                    th:text="|${#numbers.formatDecimal(total,1,'COMMA',2,'POINT')} MXN|">
+                    0.00 MXN
+                </h4>
+            </div>
+
+            <div class="d-flex justify-content-between mt-3">
+                <a th:href="@{/tienda}" class="btn btn-secondary">
+                    ← Seguir comprando
+                </a>
+                <a th:href="@{/carrito/pagar}" class="btn btn-success">
+                    Pagar
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+</body>
+</html>

@@ -1,7 +1,10 @@
+
 package mx.uv.daw.tienda.service;
 
-import org.springframework.stereotype.Service;
+import mx.uv.daw.tienda.model.Direccion;
+import java.util.List;
 
-@Service
-public class DireccionService {
+public interface DireccionService {
+    Direccion guardar(Direccion direccion, String email);
+    List<Direccion> listarPorUsuarioEmail(String email);
 }
