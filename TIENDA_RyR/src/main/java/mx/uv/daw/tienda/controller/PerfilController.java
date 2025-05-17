@@ -20,17 +20,23 @@ public class PerfilController {
     private final OrdenService ordenService;
     private final DetalleOrdenService detalleOrdenService;
     private final ReseniaService reseniaService;
+    private final CategoriaService categoriaService;
+    private final CarritoService carritoService;
 
     public PerfilController(UsuarioService usuarioService,
                             DireccionService direccionService,
                             OrdenService ordenService,
                             DetalleOrdenService detalleOrdenService,
-                            ReseniaService reseniaService) {
+                            ReseniaService reseniaService,
+                            CategoriaService categoriaService,
+                            CarritoService carritoService) {
         this.usuarioService      = usuarioService;
         this.direccionService    = direccionService;
         this.ordenService        = ordenService;
         this.detalleOrdenService = detalleOrdenService;
         this.reseniaService      = reseniaService;
+        this.categoriaService    = categoriaService;
+        this.carritoService      = carritoService;
     }
 
     @GetMapping("/perfil")
@@ -38,6 +44,8 @@ public class PerfilController {
         String email = auth.getName();
         Usuario u = usuarioService.buscarPorEmail(email).orElseThrow();
         model.addAttribute("usuario", u);
+        model.addAttribute("categorias", categoriaService.listarTodas());
+        model.addAttribute("carrito", carritoService.listarItemsActivos(email));
         return "PerfilUser/perfil";
     }
 
@@ -46,6 +54,8 @@ public class PerfilController {
         String email = auth.getName();
         model.addAttribute("direcciones",
                 direccionService.listarPorUsuarioEmail(email));
+        model.addAttribute("categorias", categoriaService.listarTodas());
+        model.addAttribute("carrito", carritoService.listarItemsActivos(email));
         return "PerfilUser/direcciones";
     }
 
@@ -54,13 +64,17 @@ public class PerfilController {
         String email = auth.getName();
         var ordenes = ordenService.listarPorUsuarioEmail(email);
         model.addAttribute("ordenes", ordenes);
+        model.addAttribute("categorias", categoriaService.listarTodas());
+        model.addAttribute("carrito", carritoService.listarItemsActivos(email));
         return "OrdenesUser/ordenes";
     }
 
     @GetMapping("/perfil/ordenes/{id}/detalle")
-    public String verDetalleOrden(@PathVariable Long id, Model model) {
+    public String verDetalleOrden(@PathVariable Long id, Model model, Authentication auth) {
         var detalles = detalleOrdenService.listarPorOrdenId(id);
         model.addAttribute("detalles", detalles);
+        model.addAttribute("categorias", categoriaService.listarTodas());
+        model.addAttribute("carrito", carritoService.listarItemsActivos(auth.getName()));
         return "OrdenesUser/ordenes_detalle";
     }
 
@@ -69,6 +83,8 @@ public class PerfilController {
         String email = auth.getName();
         model.addAttribute("resenas",
                 reseniaService.listarPorUsuarioEmail(email));
+        model.addAttribute("categorias", categoriaService.listarTodas());
+        model.addAttribute("carrito", carritoService.listarItemsActivos(email));
         return "PerfilUser/resenas";
     }
 }

@@ -3,6 +3,7 @@ package mx.uv.daw.tienda.controller;
 import mx.uv.daw.tienda.model.Carrito;
 import mx.uv.daw.tienda.service.CarritoService;
 import mx.uv.daw.tienda.service.ProductoService;
+import mx.uv.daw.tienda.service.CategoriaService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,12 +21,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class CarritoController {
 
     private final CarritoService carritoService;
-    private final ProductoService productoService;  // ← inyecta
+    private final ProductoService productoService;
+    private final CategoriaService categoriaService;
 
     public CarritoController(CarritoService carritoService,
-                             ProductoService productoService) {
+                             ProductoService productoService,
+                             CategoriaService categoriaService) {
         this.carritoService  = carritoService;
-        this.productoService = productoService;     // ← asigna
+        this.productoService = productoService;
+        this.categoriaService = categoriaService;
     }
 
     @GetMapping("/agregar/{idProducto}")
@@ -68,8 +72,11 @@ public class CarritoController {
 
     @GetMapping("/ver")
     public String verCarrito(Model model, Principal principal) {
-        List<Carrito> items = carritoService.listarItemsActivos(principal.getName());
+        String email = principal.getName();
+        List<Carrito> items = carritoService.listarItemsActivos(email);
         model.addAttribute("items", items);
+        model.addAttribute("categorias", categoriaService.listarTodas());
+        model.addAttribute("carrito", items);
 
         BigDecimal total = items.stream()
                 .map(i -> i.getProducto().getPrecio()
@@ -82,7 +89,11 @@ public class CarritoController {
 
     @GetMapping("/pagar")
     public String pagar(Model model, Principal principal) {
-        List<Carrito> items = carritoService.listarItemsActivos(principal.getName());
+        String email = principal.getName();
+        List<Carrito> items = carritoService.listarItemsActivos(email);
+        model.addAttribute("categorias", categoriaService.listarTodas());
+        model.addAttribute("carrito", items);
+
         BigDecimal total = items.stream()
                 .map(i -> i.getProducto().getPrecio()
                         .multiply(BigDecimal.valueOf(i.getCantidad())))
@@ -97,7 +108,7 @@ public class CarritoController {
         }
 
         // 2) Vaciar el carrito
-        carritoService.vaciarCarrito(principal.getName());
+        carritoService.vaciarCarrito(email);
 
         // 3) Generar comprobante y datos de pago
         String comprobante = UUID.randomUUID()

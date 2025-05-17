@@ -88,8 +88,8 @@ public class SecurityConfig {
                     throws IOException, ServletException {
                 boolean isAdmin = authentication.getAuthorities().stream()
                         .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-                // ADMIN → /admin/dashboard, CLIENTE → página pública /
-                String target = isAdmin ? "/admin/dashboard" : "/";
+                // ADMIN → /admin/dashboard, CLIENTE → /perfil
+                String target = isAdmin ? "/admin/dashboard" : "/perfil";
                 response.sendRedirect(request.getContextPath() + target);
             }
         };
