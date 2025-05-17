@@ -9,6 +9,8 @@
           rel="stylesheet"
           integrity="sha384-..."
           crossorigin="anonymous">
+    <!-- Bootstrap Icons CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Inclusión de estilos personalizados para colores y diseño de la app -->
     <link rel="stylesheet" th:href="@{/css/custom.css}">
 </head>
@@ -81,6 +83,13 @@
                         ¿No tienes cuenta?
                         <a th:href="@{/register}">Regístrate</a>
                     </p>
+
+                    <!-- Botón de inicio con ícono -->
+                    <div class="text-center mt-2">
+                        <a th:href="@{/}" class="btn btn-outline-secondary">
+                            <i class="bi bi-house-door"></i> Inicio
+                        </a>
+                    </div>
 
                 </div>
             </div>

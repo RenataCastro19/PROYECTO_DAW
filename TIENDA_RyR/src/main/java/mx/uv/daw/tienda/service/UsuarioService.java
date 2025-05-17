@@ -11,12 +11,15 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UsuarioService implements UserDetailsService {
 
+    private static final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -57,6 +60,37 @@ public class UsuarioService implements UserDetailsService {
      */
     @Transactional
     public void registrarCliente(Usuario u) {
+        logger.info("Starting registration for user: {}", u.getEmail());
+
+        if (usuarioRepository.findByEmail(u.getEmail()).isPresent()) {
+            logger.warn("User already exists with email: {}", u.getEmail());
+            throw new ValidationException("Ya existe un usuario con ese email");
+        }
+        if (!u.getContrasenia().equals(u.getConfirmPassword())) {
+            logger.warn("Password mismatch for user: {}", u.getEmail());
+            throw new ValidationException("Las contraseñas no coinciden");
+        }
+
+        try {
+            String encodedPassword = passwordEncoder.encode(u.getContrasenia());
+            logger.debug("Password encoded successfully for user: {}", u.getEmail());
+
+            u.setContrasenia(encodedPassword);
+            u.setRolUsuario(RolUsuario.CLIENTE);
+
+            Usuario savedUser = usuarioRepository.save(u);
+            logger.info("Successfully registered user: {} with role: {}", savedUser.getEmail(), savedUser.getRolUsuario());
+        } catch (Exception e) {
+            logger.error("Error during user registration: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    /**
+     * Registra un nuevo administrador. Este método solo debe ser llamado por usuarios ADMIN existentes.
+     */
+    @Transactional
+    public void registrarAdmin(Usuario u) {
         if (usuarioRepository.findByEmail(u.getEmail()).isPresent()) {
             throw new ValidationException("Ya existe un usuario con ese email");
         }
@@ -65,7 +99,7 @@ public class UsuarioService implements UserDetailsService {
         }
 
         u.setContrasenia(passwordEncoder.encode(u.getContrasenia()));
-        u.setRolUsuario(RolUsuario.CLIENTE);
+        u.setRolUsuario(RolUsuario.ADMIN);
         usuarioRepository.save(u);
     }
 
@@ -73,14 +107,20 @@ public class UsuarioService implements UserDetailsService {
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email)
             throws UsernameNotFoundException {
+        logger.debug("Loading user by email: {}", email);
         Usuario u = usuarioRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException("Usuario no encontrado: " + email)
-                );
-        return User.builder()
+                .orElseThrow(() -> {
+                    logger.warn("User not found with email: {}", email);
+                    return new UsernameNotFoundException("Usuario no encontrado: " + email);
+                });
+
+        UserDetails userDetails = User.builder()
                 .username(u.getEmail())
                 .password(u.getContrasenia())
-                .roles(u.getRolUsuario().name())
+                .authorities("ROLE_" + u.getRolUsuario().name())
                 .build();
+
+        logger.debug("Loaded user: {} with role: {}", email, u.getRolUsuario());
+        return userDetails;
     }
 }

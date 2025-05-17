@@ -3,6 +3,10 @@ package mx.uv.daw.tienda.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.util.StringUtils;
+
+// Interface para validación condicional de contraseña
+interface PasswordValidationGroup {}
 
 @Entity
 @Table(
@@ -16,29 +20,38 @@ public class Usuario {
     @Column(name = "id_usuario")
     private Long id;
 
-    @NotBlank @Size(max = 100)
+    @NotBlank(message = "El nombre es obligatorio")
+    @Size(max = 100, message = "El nombre no puede exceder los 100 caracteres")
     @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
 
-    @NotBlank @Size(max = 100)
+    @NotBlank(message = "El apellido paterno es obligatorio")
+    @Size(max = 100, message = "El apellido paterno no puede exceder los 100 caracteres")
     @Column(name = "ap_pat", nullable = false, length = 100)
     private String apPat;
 
-    @NotBlank @Size(max = 100)
+    @NotBlank(message = "El apellido materno es obligatorio")
+    @Size(max = 100, message = "El apellido materno no puede exceder los 100 caracteres")
     @Column(name = "ap_mat", nullable = false, length = 100)
     private String apMat;
 
-    @NotBlank @Email @Size(max = 100)
+    @NotBlank(message = "El email es obligatorio")
+    @Email(message = "El formato del email no es válido")
+    @Size(max = 100, message = "El email no puede exceder los 100 caracteres")
     @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
 
-    @NotBlank @Size(min = 6, max = 100)
     @Column(name = "contrasenia", nullable = false)
     private String contrasenia;
 
-    /** campo transitorio para confirmar contraseña en el formulario **/
     @Transient
-    @NotBlank @Size(min = 6, max = 100)
+    @NotBlank(message = "La contraseña es obligatoria", groups = PasswordValidationGroup.class)
+    @Size(min = 6, max = 100, message = "La contraseña debe tener entre 6 y 100 caracteres", groups = PasswordValidationGroup.class)
+    private String rawPassword;
+
+    @Transient
+    @NotBlank(message = "Debe confirmar la contraseña", groups = PasswordValidationGroup.class)
+    @Size(min = 6, max = 100, message = "La confirmación de contraseña debe tener entre 6 y 100 caracteres", groups = PasswordValidationGroup.class)
     private String confirmPassword;
 
     @Column(name = "rol_usuario", nullable = false, length = 20)
@@ -64,6 +77,14 @@ public class Usuario {
 
     public String getContrasenia() { return contrasenia; }
     public void setContrasenia(String contrasenia) { this.contrasenia = contrasenia; }
+
+    public String getRawPassword() { return rawPassword; }
+    public void setRawPassword(String rawPassword) {
+        this.rawPassword = rawPassword;
+        if (StringUtils.hasText(rawPassword)) {
+            this.contrasenia = rawPassword;
+        }
+    }
 
     public String getConfirmPassword() { return confirmPassword; }
     public void setConfirmPassword(String confirmPassword) {

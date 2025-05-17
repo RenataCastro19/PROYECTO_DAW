@@ -3,6 +3,7 @@ package mx.uv.daw.tienda.controller;
 import jakarta.validation.Valid;
 import mx.uv.daw.tienda.model.Categoria;
 import mx.uv.daw.tienda.service.CategoriaService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -14,7 +15,8 @@ import java.util.Optional;
  * Controlador MVC para gestionar operaciones CRUD de la entidad Categoria.
  */
 @Controller
-@RequestMapping("/categoriasAdmin")
+@RequestMapping("/admin/categorias")
+@PreAuthorize("hasRole('ADMIN')")
 public class CategoriaController {
 
     private final CategoriaService categoriaService;
@@ -68,7 +70,7 @@ public class CategoriaController {
         try {
             categoriaService.guardar(categoria);
             // Si todo va bien, redirige al listado de categorías
-            return "redirect:/categoriasAdmin";
+            return "redirect:/admin/categorias";
         } catch (IllegalArgumentException e) {
             // Captura error de nombre duplicado y lo añade al modelo
             model.addAttribute("error", e.getMessage());
@@ -91,6 +93,6 @@ public class CategoriaController {
             return "categoriasAdmin/formulario";
         }
         // Si no existe, redirige al listado de categorías
-        return "redirect:/categoriasAdmin";
+        return "redirect:/admin/categorias";
     }
 }

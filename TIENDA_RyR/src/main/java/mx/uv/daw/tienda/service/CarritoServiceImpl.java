@@ -42,12 +42,24 @@ public class CarritoServiceImpl implements CarritoService {
         Producto prod = productoRepo.findById(idProducto)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
+        // Calcula cuánto habría en el carrito tras esta operación
         Carrito.CarritoId key = new Carrito.CarritoId(usr.getId(), prod.getId());
         Optional<Carrito> existente = carritoRepo.findById(key);
+        int actualEnCarrito = existente.map(Carrito::getCantidad).orElse(0);
+        int totalDeseado = actualEnCarrito + cantidad;
 
+        // Valida contra el stock disponible
+        if (totalDeseado > prod.getStock()) {
+            throw new IllegalArgumentException(
+                    "No puedes agregar más de " + prod.getStock() + " unidades de \""
+                            + prod.getNombre() + "\""
+            );
+        }
+
+        // Si cabe, lo guardamos o actualizamos
         if (existente.isPresent()) {
             Carrito c = existente.get();
-            c.setCantidad(c.getCantidad() + cantidad);
+            c.setCantidad(totalDeseado);
             carritoRepo.save(c);
         } else {
             Carrito c = new Carrito(usr, prod, cantidad, Carrito.EstadoCarrito.activo);
@@ -75,9 +87,21 @@ public class CarritoServiceImpl implements CarritoService {
     public void actualizarCantidad(String email, Long idProducto, int cantidad) {
         Usuario usr = usuarioRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Producto prod = productoRepo.findById(idProducto)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+        if (cantidad > prod.getStock()) {
+            throw new IllegalArgumentException(
+                    "No puedes actualizar a más de "
+                            + prod.getStock()
+                            + " unidades de \""
+                            + prod.getNombre()
+                            + "\""
+            );
+        }
+
         Carrito.CarritoId key = new Carrito.CarritoId(usr.getId(), idProducto);
         Optional<Carrito> op = carritoRepo.findById(key);
-
         if (op.isPresent()) {
             Carrito c = op.get();
             if (cantidad < 1) {
@@ -90,6 +114,7 @@ public class CarritoServiceImpl implements CarritoService {
             throw new RuntimeException("Item no existe en carrito");
         }
     }
+
     @Override
     @Transactional
     public void vaciarCarrito(String email) {

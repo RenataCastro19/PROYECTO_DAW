@@ -7,10 +7,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller
 public class AuthController {
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
     private final UsuarioService usuarioService;
 
     public AuthController(UsuarioService usuarioService) {
@@ -23,20 +26,26 @@ public class AuthController {
         return "usuario/register";
     }
 
-
     @PostMapping("/register")
     public String doRegister(
             @Valid @ModelAttribute("usuario") Usuario usuario,
             BindingResult br) {
+        logger.info("Intentando registrar usuario con correo: {}", usuario.getEmail());
+
         if (!usuario.getContrasenia().equals(usuario.getConfirmPassword())) {
+            logger.warn("Las contraseñas no coinciden para el usuario: {}", usuario.getEmail());
             br.rejectValue("confirmPassword", "", "Las contraseñas no coinciden");
         }
         if (br.hasErrors()) {
+            logger.warn("Errores de validación: {}", br.getAllErrors());
             return "usuario/register";
         }
         try {
+            logger.info("Llamando a usuarioService.registrarCliente para el usuario: {}", usuario.getEmail());
             usuarioService.registrarCliente(usuario);
+            logger.info("Usuario registrado exitosamente: {}", usuario.getEmail());
         } catch (Exception e) {
+            logger.error("Error al registrar el usuario: {}", e.getMessage(), e);
             br.rejectValue("email", "", e.getMessage());
             return "usuario/register";
         }

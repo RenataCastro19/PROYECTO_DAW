@@ -7,6 +7,7 @@ import mx.uv.daw.tienda.service.UsuarioService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.Authentication;
@@ -19,6 +20,7 @@ import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true) // <-- esto habilita @PreAuthorize
 public class SecurityConfig {
 
     /** 1) PasswordEncoder para encriptar y verificar contraseñas */
@@ -42,41 +44,34 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    DaoAuthenticationProvider authProvider) throws Exception {
         http
-                // Registrar nuestro provider
                 .authenticationProvider(authProvider)
-
-                // Definición de qué URLs van abiertas y cuáles protegidas
                 .authorizeHttpRequests(auth -> auth
-                        // Páginas públicas y recursos estáticos
-                        .requestMatchers(
-                                "/", "/index", "/tienda", "/register",
-                                "/css/**", "/js/**", "/images/**", "/webjars/**"
-                        ).permitAll()
-
-                        // Rutas de administración → solo ADMIN
+                        .requestMatchers("/", "/index", "/tienda", "/register",
+                                "/css/**", "/js/**", "/images/**", "/webjars/**",
+                                "/producto/**")
+                        .permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-
-                        // Rutas de carrito → solo CLIENTE
                         .requestMatchers("/carrito/**").hasRole("CLIENTE")
-
-                        // Cualquier otra petición → CLIENTE
                         .anyRequest().hasRole("CLIENTE")
                 )
-
-                // Configuración del formulario de login
                 .formLogin(form -> form
-                        .loginPage("/login")               // Thymeleaf en /login
-                        .loginProcessingUrl("/login")      // POST de credenciales
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .usernameParameter("username")
+                        .passwordParameter("password")
                         .successHandler(authenticationSuccessHandler())
-                        .failureUrl("/login?error=true")   // en caso de error vuelve con ?error
+                        .failureUrl("/login?error=true")
                         .permitAll()
                 )
-
-                // Configuración de logout
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout=true")
                         .permitAll()
+                )
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**")
+                        // Allow POST requests to admin profile edit endpoint
+                        .ignoringRequestMatchers("/admin/perfil/editar")
                 );
 
         return http.build();

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Perfil</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          rel="stylesheet" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" th:href="@{/css/custom.css}"/>
+
+</head>
+<body>
+<div th:replace="fragments/admin-header :: header"></div>
+<div class="container py-4">
+    <!-- Título centrado -->
+    <h2 class="text-center mb-4">Editar Perfil</h2>
+
+    <!-- Formulario centrado en ancho medio -->
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6">
+            <!-- Mensaje global de error -->
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+            <!-- Mensaje de éxito -->
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+            <form th:action="@{/admin/perfil/editar}" th:object="${usuario}" method="post" class="needs-validation">
+                <!-- CSRF Token -->
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                <!-- Campo oculto para el ID -->
+                <input type="hidden" th:field="*{id}" />
+                <!-- Campo oculto para mantener el rol -->
+                <input type="hidden" th:field="*{rolUsuario}" />
+                <!-- Campo oculto para mantener la contraseña actual -->
+                <input type="hidden" name="currentPassword" th:value="${currentPassword}" />
+
+                <!-- Debug: Mostrar todos los errores -->
+                <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger">
+                    <h4>Se encontraron los siguientes errores:</h4>
+                    <ul>
+                        <li th:each="err : ${#fields.allErrors()}" th:text="${err}">Error</li>
+                    </ul>
+                </div>
+
+                <!-- Nombre -->
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre</label>
+                    <input type="text"
+                           id="nombre"
+                           class="form-control"
+                           th:field="*{nombre}"
+                           th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid'"
+                           placeholder="Tu nombre" />
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}">
+                        Error nombre
+                    </div>
+                </div>
+
+                <!-- Apellido Paterno -->
+                <div class="mb-3">
+                    <label for="apPat" class="form-label">Apellido Paterno</label>
+                    <input type="text"
+                           id="apPat"
+                           class="form-control"
+                           th:field="*{apPat}"
+                           th:classappend="${#fields.hasErrors('apPat')} ? 'is-invalid'"
+                           placeholder="Tu apellido paterno" />
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('apPat')}" th:errors="*{apPat}">
+                        Error apellido paterno
+                    </div>
+                </div>
+
+                <!-- Apellido Materno -->
+                <div class="mb-3">
+                    <label for="apMat" class="form-label">Apellido Materno</label>
+                    <input type="text"
+                           id="apMat"
+                           class="form-control"
+                           th:field="*{apMat}"
+                           th:classappend="${#fields.hasErrors('apMat')} ? 'is-invalid'"
+                           placeholder="Tu apellido materno" />
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('apMat')}" th:errors="*{apMat}">
+                        Error apellido materno
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email"
+                           id="email"
+                           class="form-control"
+                           th:field="*{email}"
+                           th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
+                           placeholder="tu.email@ejemplo.com" />
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
+                        Error email
+                    </div>
+                </div>
+
+                <!-- Sección de Cambio de Contraseña -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5 class="mb-0">Cambiar Contraseña (opcional)</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label for="rawPassword" class="form-label">Nueva Contraseña</label>
+                            <input type="password"
+                                   id="rawPassword"
+                                   class="form-control"
+                                   th:field="*{rawPassword}"
+                                   th:classappend="${#fields.hasErrors('rawPassword')} ? 'is-invalid'"
+                                   placeholder="Dejar en blanco para mantener la actual" />
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('rawPassword')}" th:errors="*{rawPassword}">
+                                Error contraseña
+                            </div>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirmar Nueva Contraseña</label>
+                            <input type="password"
+                                   id="confirmPassword"
+                                   class="form-control"
+                                   th:field="*{confirmPassword}"
+                                   th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid'"
+                                   placeholder="Dejar en blanco para mantener la actual" />
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}">
+                                Error confirmar contraseña
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones Guardar y Cancelar -->
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Guardar
+                    </button>
+                    <a th:href="@{/admin/dashboard}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<!-- Script para mostrar mensaje en consola al guardar -->
+<script th:if="${success}">
+    console.log('Perfil actualizado exitosamente');
+</script>
+
+<!-- Debug: Mostrar objeto usuario -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    console.log('Usuario actual:', /*[[${usuario}]]*/ null);
+    /*]]>*/
+</script>
+
+</body>
+</html>

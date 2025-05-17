@@ -3,9 +3,12 @@ package mx.uv.daw.tienda.controller;
 import mx.uv.daw.tienda.model.Producto;
 import mx.uv.daw.tienda.model.Resenia;
 import mx.uv.daw.tienda.model.Usuario;
+import mx.uv.daw.tienda.model.Carrito;
 import mx.uv.daw.tienda.service.ProductoService;
 import mx.uv.daw.tienda.service.ReseniaService;
 import mx.uv.daw.tienda.service.UsuarioService;
+import mx.uv.daw.tienda.service.CarritoService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Collections;
 
 @Controller
 @RequestMapping("/producto")
@@ -22,13 +26,24 @@ public class ProductoUserController {
     private final ProductoService productoService;
     private final ReseniaService reseniaService;
     private final UsuarioService usuarioService;
+    private final CarritoService carritoService;
 
     public ProductoUserController(ProductoService productoService,
                                   ReseniaService reseniaService,
-                                  UsuarioService usuarioService) {
+                                  UsuarioService usuarioService,
+                                  CarritoService carritoService) {
         this.productoService = productoService;
         this.reseniaService = reseniaService;
-        this.usuarioService  = usuarioService;
+        this.usuarioService = usuarioService;
+        this.carritoService = carritoService;
+    }
+
+    @ModelAttribute("carrito")
+    public List<Carrito> obtenerCarrito(Principal principal) {
+        if (principal == null) {
+            return Collections.emptyList();
+        }
+        return carritoService.listarItemsActivos(principal.getName());
     }
 
     @GetMapping("/{id}")
@@ -52,6 +67,7 @@ public class ProductoUserController {
     }
 
     @PostMapping("/{id}/resenia")
+    @PreAuthorize("hasRole('CLIENTE')")
     public String enviarResenia(@PathVariable Long id,
                                 @RequestParam int calificacion,
                                 @RequestParam String comentario,

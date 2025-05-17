@@ -6,6 +6,7 @@ import mx.uv.daw.tienda.service.ProductoService;
 import mx.uv.daw.tienda.service.CategoriaService;
 import mx.uv.daw.tienda.service.MaterialService;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,7 +20,8 @@ import java.util.Optional;
  * Maneja rutas para listar, crear, editar y guardar productos.
  */
 @Controller
-@RequestMapping("/productosAdmin")
+@RequestMapping("/admin/productos")
+@PreAuthorize("hasRole('ADMIN')")
 public class ProductoController {
 
     private final ProductoService productoService;
@@ -38,7 +40,6 @@ public class ProductoController {
     }
 
     /**
-     * GET /productosAdmin
      * Muestra el listado de todos los productos.
      */
     @GetMapping
@@ -49,7 +50,6 @@ public class ProductoController {
     }
 
     /**
-     * GET /productosAdmin/nuevo
      * Muestra el formulario para crear un nuevo producto,
      * incluyendo listas de categorías y materiales.
      */
@@ -64,7 +64,6 @@ public class ProductoController {
     }
 
     /**
-     * POST /productosAdmin/guardar
      * Valida y guarda el producto (creación o edición).
      * Si hay errores de validación o nombre duplicado, vuelve al formulario.
      */
@@ -83,7 +82,7 @@ public class ProductoController {
 
         try {
             productoService.guardar(producto);
-            return "redirect:/productosAdmin";
+            return "redirect:/admin/productos";
         } catch (IllegalArgumentException | DataIntegrityViolationException e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("categorias", categoriaService.listarTodas());
@@ -93,7 +92,6 @@ public class ProductoController {
     }
 
     /**
-     * GET /productosAdmin/editar/{id}
      * Carga los datos de un producto existente en el formulario para edición.
      */
     @GetMapping("/editar/{id}")
@@ -107,6 +105,6 @@ public class ProductoController {
             return "productosAdmin/formulario";
         }
         // Si no existe, redirige al listado
-        return "redirect:/productosAdmin";
+        return "redirect:/admin/productos";
     }
 }

@@ -3,6 +3,7 @@ package mx.uv.daw.tienda.controller;
 import jakarta.validation.Valid;
 import mx.uv.daw.tienda.model.Material;
 import mx.uv.daw.tienda.service.MaterialService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,7 +16,8 @@ import java.util.Optional;
  * Maneja rutas para listar, crear, editar y guardar materiales.
  */
 @Controller
-@RequestMapping("/materialesAdmin")
+@RequestMapping("/admin/materiales")
+@PreAuthorize("hasRole('ADMIN')")
 public class MaterialController {
 
     private final MaterialService materialService;
@@ -25,7 +27,6 @@ public class MaterialController {
     }
 
     /**
-     * GET /materialesAdmin
      * Muestra el listado de todos los materiales.
      */
     @GetMapping
@@ -35,7 +36,6 @@ public class MaterialController {
     }
 
     /**
-     * GET /materialesAdmin/nuevo
      * Muestra el formulario vacío para crear un nuevo material.
      */
     @GetMapping("/nuevo")
@@ -45,7 +45,6 @@ public class MaterialController {
     }
 
     /**
-     * POST /materialesAdmin/guardar
      * Valida y guarda un material (creación o edición).
      * Si hay errores de validación o nombre duplicado, vuelve al formulario.
      */
@@ -63,7 +62,7 @@ public class MaterialController {
         try {
             // 2) Intentar guardar, puede lanzar IllegalArgumentException por duplicado
             materialService.guardar(material);
-            return "redirect:/materialesAdmin";
+            return "redirect:/admin/materiales";
         } catch (IllegalArgumentException e) {
             // 3) Capturar error de nombre duplicado y mostrar mensaje
             model.addAttribute("error", e.getMessage());
@@ -72,7 +71,6 @@ public class MaterialController {
     }
 
     /**
-     * GET /materialesAdmin/editar/{id}
      * Carga los datos de un material existente en el formulario para edición.
      */
     @GetMapping("/editar/{id}")
@@ -83,6 +81,6 @@ public class MaterialController {
             return "materialesAdmin/formulario";
         }
         // Si no existe, redirige al listado
-        return "redirect:/materialesAdmin";
+        return "redirect:/admin/materiales";
     }
 }

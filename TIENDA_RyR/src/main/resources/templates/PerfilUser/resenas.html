@@ -20,9 +20,11 @@
       <div class="mb-2">
         <strong>Puntuación:</strong>
         <span th:each="i : ${#numbers.sequence(1, r.calificacion)}">
-            <i class="bi bi-star-fill text-warning"></i>
-          </span>
+    <i class="bi bi-star-fill text-warning"></i>
+  </span>
+        <span class="ms-2" th:text="${r.calificacion}">0</span>
       </div>
+
       <p th:text="${r.comentario}">Comentario…</p>
       <small class="text-muted" th:text="${#temporals.format(r.fechaResenia,'dd MMM yyyy')}">
         01 Ene 2025
