@@ -22,38 +22,26 @@
     <div class="card mb-4 shadow-sm">
         <div class="card-body">
             <h5 class="card-title">Comprobante de Pago</h5>
+
             <p>
-                <strong>Número:</strong>
-                <span th:text="${comprobante}">ABC12345</span>
+                <strong>Número de Orden:</strong>
+                <span th:if="${ordenId}" th:text="${ordenId}">12345</span>
+                <span th:unless="${ordenId}">N/A</span>
             </p>
             <p>
                 <strong>Fecha:</strong>
                 <span th:text="${fechaPago}">01/01/2025 12:00:00</span>
             </p>
-            <p>
-                <strong>Monto Total:</strong>
-                <span class="text-danger"
-                      th:text="|${#numbers.formatDecimal(total,1,'COMMA',2,'POINT')} MXN|">
-                        0.00 MXN
-                    </span>
+            <div class="alert alert-success mb-3">
+                <h5 class="mb-0">
+                    <strong>Monto Total:</strong>
+                    <span class="text-danger" th:text="|${#numbers.formatDecimal(total,1,'COMMA',2,'POINT')} MXN|">0.00 MXN</span>
+                </h5>
+            </div>
+            <p class="mb-0">
+                <strong>Entrega estimada:</strong>
+                <span class="text-success" th:text="${fechaEntrega}">06/01/2025</span>
             </p>
-        </div>
-    </div>
-
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <h5 class="card-title">Detalle de tu pedido</h5>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item d-flex justify-content-between"
-                    th:each="item : ${items}">
-                    <span th:text="${item.producto.nombre}">Producto</span>
-                    <span>x<span th:text="${item.cantidad}">1</span></span>
-                    <span
-                            th:text="|${#numbers.formatDecimal(item.producto.precio * item.cantidad,1,'COMMA',2,'POINT')} MXN|">
-                            0.00 MXN
-                        </span>
-                </li>
-            </ul>
         </div>
     </div>
 

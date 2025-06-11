@@ -73,7 +73,7 @@ public class ProductoController {
             BindingResult result,
             Model model) {
 
-        // 1) Si hay errores de validación, rebobina selects y vuelve al form
+        //  Si hay errores de validación, rebobina selects y vuelve al form
         if (result.hasErrors()) {
             model.addAttribute("categorias", categoriaService.listarTodas());
             model.addAttribute("materiales", materialService.listarTodas());

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.util.Locale;
-
+// ayuda a enlazar datos de formularios HTML con objetos de tu modelo
 /**
  * Formatter personalizado para la entidad Categoria.
  * Permite convertir automáticamente entre el ID (String) recibido desde
@@ -16,26 +16,16 @@ import java.util.Locale;
 @Component
 public class CategoriaFormatter implements Formatter<Categoria> {
 
-    /** Servicio para acceder a las operaciones de Categoria. */
+    // Servicio para acceder a las operaciones de Categoria.
     private final CategoriaService service;
 
-    /**
-     * Inyecta el servicio de categoria para poder buscar por ID.
-     *
-     * @param service servicio con lógica de negocio para Categoria
-     */
     public CategoriaFormatter(CategoriaService service) {
         this.service = service;
     }
 
     /**
-     * Convierte el texto (normalmente el valor de un <select> o input) a una
-     * instancia de Categoria buscándola por su ID.
-     *
-     * @param text   el valor recibido en la petición (String que representa el ID)
-     * @param locale la configuración regional (no usada aquí)
-     * @return la Categoria correspondiente al ID, o null si el texto está vacío
-     * @throws ParseException si no se encuentra ninguna Categoria con ese ID
+     * Convierte un ID (String) a un objeto Categoria.
+     * Usado cuando se envía un formulario con un <select>.
      */
     @Override
     public Categoria parse(String text, Locale locale) throws ParseException {
@@ -51,13 +41,10 @@ public class CategoriaFormatter implements Formatter<Categoria> {
     }
 
     /**
-     * Convierte una instancia de Categoria a su representación String (el ID).
-     * Utilizado al renderizar formularios para rellenar automáticamente el valor.
-     *
-     * @param object la Categoria a convertir
-     * @param locale la configuración regional (no usada aquí)
-     * @return el ID de la Categoria como String, o cadena vacía si es null
+     * Convierte un objeto Categoria a su ID en texto.
+     * Usado para mostrar el valor seleccionado en un formulario.
      */
+
     @Override
     public String print(Categoria object, Locale locale) {
         // Si la categoría no es null, devolvemos su ID en formato String

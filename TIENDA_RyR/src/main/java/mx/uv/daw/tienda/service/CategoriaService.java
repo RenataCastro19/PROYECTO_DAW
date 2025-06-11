@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-
+//NO NECEISTA INTERFAZ , PQ es un servicio más simple
 @Service
 public class CategoriaService {
 
@@ -16,10 +16,8 @@ public class CategoriaService {
     public CategoriaService(CategoriaRepository categoriaRepository) {
         this.categoriaRepository = categoriaRepository;
     }
+     // Listar todas las categorías
 
-    /**
-     * Listar todas las categorías
-     */
     @Transactional(readOnly = true)
     public List<Categoria> listarTodas() {
         return categoriaRepository.findAll();

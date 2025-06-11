@@ -7,18 +7,14 @@
 <header th:fragment="header">
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container-fluid">
-            <a class="navbar-brand" th:href="@{/}">RyR Admin</a>
+            <a class="navbar-brand" th:href="@{/admin/dashboard}">RyR Admin Dashboard</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="adminNavbar">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/admin/dashboard}">
-                            <i class="bi bi-speedometer2"></i> Dashboard
-                        </a>
-                    </li>
+
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/admin/categorias}">
                             <i class="bi bi-grid-3x3-gap"></i> Categorías
@@ -37,6 +33,11 @@
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/admin/usuarios}">
                             <i class="bi bi-people"></i> Usuarios
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/admin/ordenes}">
+                            <i class="bi bi-cart-check"></i> Órdenes
                         </a>
                     </li>
                 </ul>

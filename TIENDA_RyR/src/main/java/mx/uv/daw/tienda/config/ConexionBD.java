@@ -10,7 +10,7 @@ import java.sql.Connection;
 @Component
 public class ConexionBD implements ApplicationRunner {
 
-    private final DataSource dataSource;
+    private final DataSource dataSource;//Constructor que recibe la fuente de datos mediante inyección de dependencias.
 
     public ConexionBD(DataSource dataSource) {
         this.dataSource = dataSource;

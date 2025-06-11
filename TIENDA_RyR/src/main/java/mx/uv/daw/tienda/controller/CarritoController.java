@@ -40,6 +40,12 @@ public class CarritoController {
             RedirectAttributes flash
     ) {
         try {
+            // Comprobar si el usuario es admin
+            if (isAdmin(principal)) {
+                flash.addFlashAttribute("error", "Los administradores no pueden realizar compras");
+                return "redirect:/admin/dashboard";
+            }
+
             carritoService.agregarItem(principal.getName(), idProducto, cantidad);
         } catch (IllegalArgumentException e) {
             flash.addFlashAttribute("error", e.getMessage());
@@ -49,7 +55,14 @@ public class CarritoController {
 
     @GetMapping("/eliminar/{idProducto}")
     public String eliminar(@PathVariable Long idProducto,
-                           Principal principal) {
+                           Principal principal,
+                           RedirectAttributes flash) {
+        // Comprobar si el usuario es admin
+        if (isAdmin(principal)) {
+            flash.addFlashAttribute("error", "Los administradores no pueden realizar compras");
+            return "redirect:/admin/dashboard";
+        }
+
         carritoService.eliminarItem(principal.getName(), idProducto);
         return "redirect:/carrito/ver";
     }
@@ -62,6 +75,12 @@ public class CarritoController {
             RedirectAttributes flash
     ) {
         try {
+            // Comprobar si el usuario es admin
+            if (isAdmin(principal)) {
+                flash.addFlashAttribute("error", "Los administradores no pueden realizar compras");
+                return "redirect:/admin/dashboard";
+            }
+
             carritoService.actualizarCantidad(principal.getName(), idProducto, cantidad);
             flash.addFlashAttribute("success", "Cantidad actualizada");
         } catch (IllegalArgumentException e) {
@@ -71,7 +90,14 @@ public class CarritoController {
     }
 
     @GetMapping("/ver")
-    public String verCarrito(Model model, Principal principal) {
+    public String verCarrito(Model model, Principal principal,
+                             RedirectAttributes flash) {
+        // Comprobar si el usuario es admin
+        if (isAdmin(principal)) {
+            flash.addFlashAttribute("error", "Los administradores no pueden realizar compras");
+            return "redirect:/admin/dashboard";
+        }
+
         String email = principal.getName();
         List<Carrito> items = carritoService.listarItemsActivos(email);
         model.addAttribute("items", items);
@@ -88,16 +114,18 @@ public class CarritoController {
     }
 
     @GetMapping("/pagar")
-    public String pagar(Model model, Principal principal) {
+    public String pagar(Model model, Principal principal,
+                        @ModelAttribute("montoTotal") BigDecimal montoTotal,
+                        @ModelAttribute("ordenId") Long ordenId,
+                        RedirectAttributes flash) {
+        // Comprobar si el usuario es admin
+        if (isAdmin(principal)) {
+            flash.addFlashAttribute("error", "Los administradores no pueden realizar compras");
+            return "redirect:/admin/dashboard";
+        }
+
         String email = principal.getName();
         List<Carrito> items = carritoService.listarItemsActivos(email);
-        model.addAttribute("categorias", categoriaService.listarTodas());
-        model.addAttribute("carrito", items);
-
-        BigDecimal total = items.stream()
-                .map(i -> i.getProducto().getPrecio()
-                        .multiply(BigDecimal.valueOf(i.getCantidad())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         // 1) Descontar stock de cada producto
         for (Carrito item : items) {
@@ -115,16 +143,30 @@ public class CarritoController {
                 .toString()
                 .substring(0, 8)
                 .toUpperCase();
-        String fechaPagoStr = LocalDateTime.now()
-                .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+        LocalDateTime fechaPago = LocalDateTime.now();
+        String fechaPagoStr = fechaPago.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
         String estadoPago = "CONFIRMADO";
 
-        model.addAttribute("items", items);
-        model.addAttribute("total", total);
+        // 4) Calcular fecha estimada de entrega (5 días después)
+        String fechaEntregaStr = fechaPago.plusDays(5)
+                .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
+        // Agregar atributos al modelo
+        model.addAttribute("categorias", categoriaService.listarTodas());
+        model.addAttribute("carrito", items);
+        model.addAttribute("total", montoTotal);
         model.addAttribute("comprobante", comprobante);
         model.addAttribute("fechaPago", fechaPagoStr);
+        model.addAttribute("fechaEntrega", fechaEntregaStr);
         model.addAttribute("estadoPago", estadoPago);
+        model.addAttribute("ordenId", ordenId);
 
         return "CarritoUser/pago";
+    }
+
+    // Agregar método auxiliar para comprobar si el usuario es admin
+    private boolean isAdmin(Principal principal) {
+        String email = principal.getName();
+        return carritoService.esUsuarioAdmin(email);
     }
 }

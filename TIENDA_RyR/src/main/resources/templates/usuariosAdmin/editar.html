@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Perfil de Usuario</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" th:href="@{/css/custom.css}"/>
+</head>
+<body>
+<div th:replace="fragments/admin-header :: header"></div>
+<div class="container py-4">
+    <h2 class="text-center mb-4">Editar Perfil de Usuario</h2>
+    <form th:action="@{/admin/usuarios/{id}/editar(id=${usuario.id})}" th:object="${usuario}" method="post" class="mb-4">
+        <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" id="nombre" class="form-control" th:field="*{nombre}" required />
+        </div>
+        <div class="mb-3">
+            <label for="apPat" class="form-label">Apellido Paterno</label>
+            <input type="text" id="apPat" class="form-control" th:field="*{apPat}" required />
+        </div>
+        <div class="mb-3">
+            <label for="apMat" class="form-label">Apellido Materno</label>
+            <input type="text" id="apMat" class="form-control" th:field="*{apMat}" required />
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" id="email" class="form-control" th:field="*{email}" required />
+        </div>
+        <div class="mb-3">
+            <label for="rolUsuario" class="form-label">Rol</label>
+            <input type="text" id="rolUsuario" class="form-control" th:field="*{rolUsuario}" readonly />
+        </div>
+        <div class="mb-3">
+            <label for="rawPassword" class="form-label">Nueva Contraseña (opcional)</label>
+            <input type="password" id="rawPassword" class="form-control" th:field="*{rawPassword}" placeholder="Dejar en blanco para mantener la actual" />
+        </div>
+        <div class="mb-3">
+            <label for="confirmPassword" class="form-label">Confirmar Nueva Contraseña</label>
+            <input type="password" id="confirmPassword" class="form-control" th:field="*{confirmPassword}" placeholder="Dejar en blanco para mantener la actual" />
+        </div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        <a th:href="@{/admin/usuarios/{id}(id=${usuario.id})}" class="btn btn-secondary ms-2">Cancelar</a>
+    </form>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Direcciones</h5>
+                    <div th:if="${#lists.isEmpty(direcciones)}" class="text-muted">Sin direcciones registradas.</div>
+                    <ul class="list-group" th:if="${!#lists.isEmpty(direcciones)}">
+                        <li class="list-group-item d-flex justify-content-between align-items-center" th:each="d : ${direcciones}">
+                            <span>
+                                <span th:text="${d.calle}"></span>,
+                                <span th:text="${d.ciudad}"></span>,
+                                <span th:text="${d.estado}"></span>,
+                                CP: <span th:text="${d.codigoPostal}"></span>
+                            </span>
+                            <form th:action="@{/admin/usuarios/direcciones/{id}/eliminar(id=${d.id})}" method="post" style="display:inline;">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar dirección?');">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Órdenes</h5>
+                    <div th:if="${#lists.isEmpty(ordenes)}" class="text-muted">Sin órdenes registradas.</div>
+                    <ul class="list-group" th:if="${!#lists.isEmpty(ordenes)}">
+                        <li class="list-group-item d-flex justify-content-between align-items-center" th:each="o : ${ordenes}">
+                            <span>
+                                <b>ID:</b> <span th:text="${o.id}"></span> |
+                                <b>Fecha:</b> <span th:text="${#temporals.format(o.fecha, 'dd/MM/yyyy HH:mm')}"></span> |
+                                <b>Total:</b> <span th:text="${#numbers.formatDecimal(o.totalOrden,1,'COMMA',2,'POINT')} + ' MXN'"></span>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a th:href="@{/admin/usuarios/{id}(id=${usuario.id})}" class="btn btn-secondary">Volver al perfil</a>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+</body>
+</html> 

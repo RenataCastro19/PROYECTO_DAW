@@ -8,11 +8,7 @@ import org.springframework.stereotype.Component;
 import java.text.ParseException;
 import java.util.Locale;
 
-/**
- * Formatter personalizado para la entidad Material.
- * Convierte automáticamente entre el valor String recibido desde
- * formularios (normalmente un ID) y la instancia correspondiente de Material.
- */
+//Convierte entre String (ID) y objeto Material en formularios HTML.
 @Component
 public class MaterialFormatter implements Formatter<Material> {
 
@@ -29,12 +25,10 @@ public class MaterialFormatter implements Formatter<Material> {
     }
 
     /**
-     * Parsea el texto recibido (ID de Material) a una entidad Material.
-     *
-     * @param text   cadena que representa el ID del Material
-     * @param locale configuración regional (no se usa en este formateador)
-     * @return la instancia de Material con el ID dado, o null si el texto está vacío
-     * @throws ParseException si no se encuentra un Material con el ID proporcionado
+     * Convierte un ID (String) en un objeto Material.
+     * Usado al recibir datos de un formulario .
+     * parse significa analizar y convertir un texto en otro tipo de dato o estructura
+     * throws indicar que un método puede lanzar una excepción (un error controlado)
      */
     @Override
     public Material parse(String text, Locale locale) throws ParseException {
@@ -50,11 +44,8 @@ public class MaterialFormatter implements Formatter<Material> {
     }
 
     /**
-     * Convierte una instancia de Material a su representación String (el ID).
-     *
-     * @param object la instancia de Material a convertir
-     * @param locale configuración regional (no se usa aquí)
-     * @return el ID del Material como String, o cadena vacía si el objeto es null
+     * Convierte un objeto Material en su ID (String).
+     * Usado al mostrar el valor seleccionado en el formulario.
      */
     @Override
     public String print(Material object, Locale locale) {

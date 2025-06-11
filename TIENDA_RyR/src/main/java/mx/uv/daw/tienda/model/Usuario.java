@@ -8,20 +8,20 @@ import org.springframework.util.StringUtils;
 // Interface para validación condicional de contraseña
 interface PasswordValidationGroup {}
 
-@Entity
+@Entity//Mapea la clase a una tabla de bd
 @Table(
-        name = "usuario",
-        uniqueConstraints = @UniqueConstraint(columnNames = "email")
+        name = "usuario",//le da nombre a la tabla
+        uniqueConstraints = @UniqueConstraint(columnNames = "email")//email unico
 )
 public class Usuario {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)//Se genera automáticamente autoincreemnto
     @Column(name = "id_usuario")
     private Long id;
 
-    @NotBlank(message = "El nombre es obligatorio")
-    @Size(max = 100, message = "El nombre no puede exceder los 100 caracteres")
+    @NotBlank(message = "El nombre es obligatorio")//no puede estar vacio
+    @Size(max = 100, message = "El nombre no puede exceder los 100 caracteres")//tamaño
     @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
 
@@ -36,9 +36,9 @@ public class Usuario {
     private String apMat;
 
     @NotBlank(message = "El email es obligatorio")
-    @Email(message = "El formato del email no es válido")
+    @Email(message = "El formato del email no es válido")//debe de tener formato de correo
     @Size(max = 100, message = "El email no puede exceder los 100 caracteres")
-    @Column(name = "email", nullable = false, unique = true, length = 100)
+    @Column(name = "email", nullable = false, unique = true, length = 100)//unico en la tabla
     private String email;
 
     @Column(name = "contrasenia", nullable = false)
@@ -57,9 +57,9 @@ public class Usuario {
     @Column(name = "rol_usuario", nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
     private RolUsuario rolUsuario;
-
+    //constructor vacio para inciializar el obj
     public Usuario() {}
-
+    //metodos get y set para leer y modificar los atributos privados
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

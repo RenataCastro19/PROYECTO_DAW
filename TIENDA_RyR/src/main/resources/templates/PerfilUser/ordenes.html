@@ -2,39 +2,117 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8"/>
-  <title>Mis Órdenes</title>
+  <title>Mis Pedidos | RyR Joyería</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
         rel="stylesheet" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" th:href="@{/css/custom.css}"/>
 </head>
 <body>
 <div th:replace="fragments/header :: header"></div>
-<div class="container py-5">
-  <h2 class="mb-4">Mis Órdenes</h2>
-  <div th:if="${#lists.isEmpty(ordenes)}" class="alert alert-info">
-    No tienes órdenes registradas.
+
+<div class="profile-header">
+  <div class="container text-center">
+    <div class="display-1 mb-4">
+      <i class="bi bi-box2-heart"></i>
+    </div>
+    <h1 class="display-4 mb-2" style="font-family: 'Playfair Display', serif;">
+      Mis Pedidos
+    </h1>
+    <p class="lead mb-0">
+      Historial de tus piezas exclusivas
+    </p>
   </div>
-  <ul class="list-group" th:if="${!#lists.isEmpty(ordenes)}">
-    <li class="list-group-item d-flex justify-content-between align-items-center"
-        th:each="o : ${ordenes}">
-      <div>
-        <strong th:text="'Orden #' + o.id">Orden #1</strong><br/>
-        <small th:text="${#temporals.format(o.fecha,'dd/MM/yyyy HH:mm')}">
-          01/01/2025 12:00
-        </small>
-      </div>
-      <div>
-          <span class="me-3 text-danger"
-                th:text="|${#numbers.formatDecimal(o.totalOrden,1,'COMMA',2,'POINT')} MXN|">
-            0.00 MXN
-          </span>
-        <a th:href="@{/perfil/ordenes/{id}/detalle(id=${o.id})}"
-           class="btn btn-sm btn-outline-primary">Ver Detalle</a>
-      </div>
-    </li>
-  </ul>
-  <a th:href="@{/perfil}" class="btn btn-secondary mt-4">← Volver al perfil</a>
 </div>
+
+<div class="container py-5">
+  <div th:if="${#lists.isEmpty(ordenes)}" class="text-center">
+    <div class="alert alert-info d-inline-block">
+      <i class="bi bi-info-circle me-2"></i>
+      No tienes pedidos registrados aún.
+    </div>
+    <div class="mt-4">
+      <a th:href="@{/tienda}" class="btn profile-btn-outline">
+        <i class="bi bi-bag-heart me-2"></i>Explorar joyería
+      </a>
+    </div>
+  </div>
+
+  <div class="row g-4" th:if="${!#lists.isEmpty(ordenes)}">
+    <div class="col-12" th:each="orden : ${ordenes}">
+      <div class="card profile-card">
+        <div class="card-body p-4">
+          <div class="row align-items-center">
+            <div class="col-md-3">
+              <h5 class="card-title mb-2" style="font-family: 'Playfair Display', serif;">
+                <i class="bi bi-box-seam me-2"></i>
+                Pedido #<span th:text="${orden.id}">1</span>
+              </h5>
+              <p class="text-muted mb-0">
+                <i class="bi bi-calendar3 me-2"></i>
+                <span th:text="${#temporals.format(orden.fecha,'dd MMM yyyy')}">
+                                    01 Ene 2025
+                                </span>
+              </p>
+              <p class="text-muted mb-0">
+                <i class="bi bi-clock me-2"></i>
+                <span th:text="${#temporals.format(orden.fecha,'HH:mm')}">
+                                    12:00
+                                </span>
+              </p>
+            </div>
+
+            <div class="col-md-3">
+              <h6 class="text-muted mb-2">Estado de entrega</h6>
+              <span th:if="${enviosPorOrden[orden.id]?.estado != null}"
+                    th:class="${'badge ' +
+                    (enviosPorOrden[orden.id].estado.name() == 'pendiente' ? 'bg-danger' :
+                    (enviosPorOrden[orden.id].estado.name() == 'preparando' ? 'bg-warning text-dark' :
+                    (enviosPorOrden[orden.id].estado.name() == 'enviado' ? 'bg-info text-dark' :
+                    (enviosPorOrden[orden.id].estado.name() == 'entregado' ? 'bg-success' : 'bg-secondary'))))}">
+                <i class="bi bi-truck me-2"></i>
+                <span th:text="${enviosPorOrden[orden.id].estado}">Estado</span>
+              </span>
+              <span th:if="${enviosPorOrden[orden.id]?.estado == null}" class="badge bg-secondary">
+                <i class="bi bi-truck me-2"></i>Sin envío
+              </span>
+              <p class="mb-0 mt-2" th:if="${enviosPorOrden[orden.id]?.fechaEntregaEstimada != null}">
+                <small class="text-muted">Entrega estimada:</small><br>
+                <span th:text="${#temporals.format(enviosPorOrden[orden.id].fechaEntregaEstimada, 'dd MMM yyyy')}">
+                  06 Ene 2025
+                </span>
+              </p>
+            </div>
+
+            <div class="col-md-3">
+              <h6 class="text-muted mb-2">Total del pedido</h6>
+              <h4 class="text-danger mb-0">
+                                <span th:text="|${#numbers.formatDecimal(orden.totalOrden,1,'COMMA',2,'POINT')} MXN|">
+                                    0.00 MXN
+                                </span>
+              </h4>
+            </div>
+
+            <div class="col-md-3 text-md-end">
+              <a th:href="@{/perfil/ordenes/{id}/detalle(id=${orden.id})}"
+                 class="btn profile-btn-outline">
+                <i class="bi bi-eye me-2"></i>Ver detalles
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mt-5">
+    <a th:href="@{/perfil}" class="btn profile-btn-outline">
+      <i class="bi bi-arrow-left me-2"></i>Volver al perfil
+    </a>
+  </div>
+</div>
+
 <div th:replace="fragments/footer :: footer"></div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
         crossorigin="anonymous"></script>

@@ -30,6 +30,9 @@ public class Orden {
     @Column(name = "fecha_modificacion", nullable = false)
     private LocalDateTime fechaModificacion;
 
+    @OneToOne(mappedBy = "orden", fetch = FetchType.LAZY)
+    private Envio envio;
+
     public Orden() {
     }
 
@@ -87,5 +90,13 @@ public class Orden {
 
     public void setFechaModificacion(LocalDateTime fechaModificacion) {
         this.fechaModificacion = fechaModificacion;
+    }
+
+    public Envio getEnvio() {
+        return envio;
+    }
+
+    public void setEnvio(Envio envio) {
+        this.envio = envio;
     }
 }

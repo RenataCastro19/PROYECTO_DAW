@@ -4,5 +4,5 @@ import mx.uv.daw.tienda.model.DetalleOrden;
 import java.util.List;
 
 public interface DetalleOrdenService {
-    List<DetalleOrden> listarPorOrdenId(Long ordenId);
+    List<DetalleOrden> buscarPorOrdenId(Long ordenId);
 }

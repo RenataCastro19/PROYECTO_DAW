@@ -36,6 +36,11 @@ public class ProductoService {
         return productoRepository.findById(id);
     }
 
+    @Transactional(readOnly = true)
+    public List<Producto> listarPorCategoria(Long categoriaId) {
+        return productoRepository.findByCategoria_Id(categoriaId);
+    }
+
     @Transactional
     public Producto guardar(Producto producto) {
         Optional<Producto> existente = productoRepository.findByNombre(producto.getNombre());

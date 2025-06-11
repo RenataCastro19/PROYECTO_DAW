@@ -1,8 +1,8 @@
-// src/main/java/mx/uv/daw/tienda/service/CarritoServiceImpl.java
 package mx.uv.daw.tienda.service;
 
 import mx.uv.daw.tienda.model.Carrito;
 import mx.uv.daw.tienda.model.Producto;
+import mx.uv.daw.tienda.model.RolUsuario;
 import mx.uv.daw.tienda.model.Usuario;
 import mx.uv.daw.tienda.repository.CarritoRepository;
 import mx.uv.daw.tienda.repository.ProductoRepository;
@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-
+//implementación concreta de la interfaz. Aquí está el código real que hace las operaciones
 @Service
 public class CarritoServiceImpl implements CarritoService {
 
@@ -28,15 +28,12 @@ public class CarritoServiceImpl implements CarritoService {
         this.productoRepo  = productoRepo;
     }
 
-//    @Override
-//    @Transactional
-//    public void agregarItem(String email, Long idProducto) {
-//        agregarItem(email, idProducto, 1);
-//    }
+
 
     @Override
-    @Transactional
+    @Transactional // Indica que este método hace cambios en la base de datos.
     public void agregarItem(String email, Long idProducto, int cantidad) {
+        //busca email y id , si no los encuentra lanza excepcion
         Usuario usr = usuarioRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         Producto prod = productoRepo.findById(idProducto)
@@ -70,6 +67,7 @@ public class CarritoServiceImpl implements CarritoService {
     @Override
     @Transactional(readOnly = true)
     public List<Carrito> listarItemsActivos(String email) {
+        // Devuelve la lista de productos activos en el carrito del usuario.
         return carritoRepo.findByUsuario_EmailAndEstado(email, Carrito.EstadoCarrito.activo);
     }
 
@@ -79,6 +77,7 @@ public class CarritoServiceImpl implements CarritoService {
         Usuario usr = usuarioRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         Carrito.CarritoId key = new Carrito.CarritoId(usr.getId(), idProducto);
+        // Elimina el producto específico del carrito del usuario.
         carritoRepo.deleteById(key);
     }
 
@@ -89,7 +88,7 @@ public class CarritoServiceImpl implements CarritoService {
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         Producto prod = productoRepo.findById(idProducto)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-
+// Valida que la cantidad solicitada no supere el stock.
         if (cantidad > prod.getStock()) {
             throw new IllegalArgumentException(
                     "No puedes actualizar a más de "
@@ -102,6 +101,7 @@ public class CarritoServiceImpl implements CarritoService {
 
         Carrito.CarritoId key = new Carrito.CarritoId(usr.getId(), idProducto);
         Optional<Carrito> op = carritoRepo.findById(key);
+        // Si el item existe, actualiza cantidad o elimina si cantidad < 1.
         if (op.isPresent()) {
             Carrito c = op.get();
             if (cantidad < 1) {
@@ -118,9 +118,22 @@ public class CarritoServiceImpl implements CarritoService {
     @Override
     @Transactional
     public void vaciarCarrito(String email) {
-        carritoRepo.deleteAllByUsuario_EmailAndEstado(
-                email, Carrito.EstadoCarrito.activo
+        // Elimina todos los productos activos en el carrito del usuario.
+        carritoRepo.deleteAllByUsuario_EmailAndEstado(email, Carrito.EstadoCarrito.activo
         );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean esUsuarioAdmin(String email) {
+        Optional<Usuario> usuarioOpt = usuarioRepo.findByEmail(email);
+        if (!usuarioOpt.isPresent()) {
+            return false;
+        }
+        Usuario usuario = usuarioOpt.get();
+        // Comprueba si el usuario tiene rol de administrador.
+
+        return usuario.getRolUsuario() == mx.uv.daw.tienda.model.RolUsuario.ADMIN;
     }
 
 }

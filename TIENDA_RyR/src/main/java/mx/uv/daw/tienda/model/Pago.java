@@ -60,8 +60,8 @@ public class Pago {
     public void setEstadoPago(EstadoPago estadoPago) { this.estadoPago = estadoPago; }
 
     public enum EstadoPago {
-        PENDIENTE,
-        CONFIRMADO,
-        RECHAZADO
+        pendiente,
+        confirmado,
+        rechazado
     }
 }

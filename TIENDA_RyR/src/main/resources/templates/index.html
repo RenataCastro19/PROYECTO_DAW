@@ -39,6 +39,9 @@
     <div th:if="${search}">
         <p class="mb-4">Resultados para: <strong th:text="${search}"></strong></p>
     </div>
+    <div th:if="${categoriaSeleccionada}">
+        <p class="mb-4">Mostrando productos de la categoría: <strong th:text="${categoriaSeleccionada.nombre}"></strong></p>
+    </div>
     <div th:if="${productos.empty}">
         <p class="text-center text-muted">No se encontraron productos.</p>
     </div>

@@ -18,19 +18,22 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 
 import java.io.IOException;
 
-@Configuration
-@EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true) // <-- esto habilita @PreAuthorize
+@Configuration//avisa a Spring que la clase es de configuraciones
+@EnableWebSecurity//seguridad de web de Sprfin
+@EnableMethodSecurity(prePostEnabled = true)//permite usar anotaciones de seguridad en metodos
 public class SecurityConfig {
 
     /** 1) PasswordEncoder para encriptar y verificar contraseñas */
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() { //metodoBEAN para crear un codificador de contraseña usuando el BCrypt
+
         return new BCryptPasswordEncoder();
     }
 
     /** 2) DaoAuthenticationProvider que usa tu UsuarioService + el encoder */
-    @Bean
+    @Bean//puente entre Spring Security y nuestra lógica de  (usuarioService)
+    // Bean que conecta la lógica de usuarios con Spring Security
+// Utiliza UsuarioService para buscar usuarios y compara contraseñas cifradas
     public DaoAuthenticationProvider authenticationProvider(UsuarioService usuarioService,
                                                             PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -40,20 +43,25 @@ public class SecurityConfig {
     }
 
     /** 3) Configuración de URLs, login, logout y permisos */
-    @Bean
+    @Bean//Define qué rutas son públicas y cuáles requieren autenticación
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    DaoAuthenticationProvider authProvider) throws Exception {
         http
                 .authenticationProvider(authProvider)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/index", "/tienda", "/register",
+                        //rutas accesibles sin autenticacion
+                        .requestMatchers("/", "/index", "/tienda", "/register", "/login",
                                 "/css/**", "/js/**", "/images/**", "/webjars/**",
                                 "/producto/**")
                         .permitAll()
+                        //rutas admin
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/carrito/**").hasRole("CLIENTE")
-                        .anyRequest().hasRole("CLIENTE")
+                        //rutas cliente - permitir acceso a ADMIN también para poder redirigir en el controlador
+                        .requestMatchers("/carrito/**", "/perfil/**", "/pedido/**").hasAnyRole("CLIENTE", "ADMIN")
+                        //cualquier otra ruta necesita autenticacion
+                        .anyRequest().authenticated()
                 )
+                //form login
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
@@ -63,15 +71,20 @@ public class SecurityConfig {
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )
+                //defince la URL para cerrar la sesion
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout=true")
                         .permitAll()
                 )
+                // Maneja excepciones de seguridad (como CSRF desactivado en recursos estáticos)( CSRP: Falsificación de Petición en Sitios Cruzados.)
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**")
-                        // Allow POST requests to admin profile edit endpoint
                         .ignoringRequestMatchers("/admin/perfil/editar")
+                )
+                // Manejo de excepciones de acceso denegado
+                .exceptionHandling(exc -> exc
+                        .accessDeniedPage("/admin/dashboard")
                 );
 
         return http.build();
@@ -88,7 +101,7 @@ public class SecurityConfig {
                     throws IOException, ServletException {
                 boolean isAdmin = authentication.getAuthorities().stream()
                         .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-                // ADMIN → /admin/dashboard, CLIENTE → /perfil
+
                 String target = isAdmin ? "/admin/dashboard" : "/perfil";
                 response.sendRedirect(request.getContextPath() + target);
             }

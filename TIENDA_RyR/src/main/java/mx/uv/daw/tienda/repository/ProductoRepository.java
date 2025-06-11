@@ -7,19 +7,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Repositorio JPA para la entidad Producto.
- * Extiende JpaRepository para proporcionar operaciones CRUD básicas.
- */
 @Repository
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
 
-    /**
-     * Busca un producto por su nombre exacto.
-     *
-     * @param nombre Nombre del producto a buscar
-     * @return Optional que contiene el Producto si existe, o vacío si no
-     */
     Optional<Producto> findByNombre(String nombre);
 
     /**
@@ -30,4 +20,6 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
             String nombreTerm,
             String descTerm
     );
+
+    List<Producto> findByCategoria_Id(Long categoriaId);
 }

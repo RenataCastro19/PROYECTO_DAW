@@ -9,15 +9,24 @@ import java.util.List;
 @Service
 public class DetalleOrdenServiceImpl implements DetalleOrdenService {
 
-    private final DetalleOrdenRepository repo;
+    private final DetalleOrdenRepository detalleOrdenRepo;
 
-    public DetalleOrdenServiceImpl(DetalleOrdenRepository repo) {
-        this.repo = repo;
+    public DetalleOrdenServiceImpl(DetalleOrdenRepository detalleOrdenRepo) {
+        this.detalleOrdenRepo = detalleOrdenRepo;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<DetalleOrden> listarPorOrdenId(Long ordenId) {
-        return repo.findByOrden_Id(ordenId);
+    public List<DetalleOrden> buscarPorOrdenId(Long ordenId) {
+        List<DetalleOrden> detalles = detalleOrdenRepo.findByOrden_Id(ordenId);
+        // Inicializar los productos
+        detalles.forEach(detalle -> {
+            detalle.getProducto().getNombre();
+            if (detalle.getProducto().getCategoria() != null) {
+                detalle.getProducto().getCategoria().getNombre();
+            }
+            detalle.getProducto().getImagen();
+        });
+        return detalles;
     }
 }

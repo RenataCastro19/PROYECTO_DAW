@@ -42,7 +42,12 @@
             <td th:text="${usuario.email}">email@example.com</td>
             <td th:text="${usuario.rolUsuario}">ROL</td>
             <td>
-                <!-- Placeholder para futuras acciones -->
+                <a th:href="@{/admin/usuarios/{id}(id=${usuario.id})}" class="btn btn-sm btn-info">
+                    <i class="bi bi-person"></i> Ver perfil
+                </a>
+                <a th:href="@{/admin/usuarios/{id}/editar(id=${usuario.id})}" class="btn btn-sm btn-warning">
+                    <i class="bi bi-pencil"></i> Editar perfil
+                </a>
             </td>
         </tr>
         </tbody>

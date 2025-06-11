@@ -21,11 +21,12 @@ public class Envio {
     @JoinColumn(name = "r_direccion", nullable = false)
     private Direccion direccion;
 
+    // Enum en minúsculas
     public enum EstadoEnvio {
-        PENDIENTE,
-        PREPARANDO,
-        ENVIADO,
-        ENTREGADO
+        pendiente,
+        preparando,
+        enviado,
+        entregado
     }
 
     @Enumerated(EnumType.STRING)

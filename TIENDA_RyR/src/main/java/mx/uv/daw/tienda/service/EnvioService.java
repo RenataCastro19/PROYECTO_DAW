@@ -1,7 +1,9 @@
 package mx.uv.daw.tienda.service;
 
-import org.springframework.stereotype.Service;
+import mx.uv.daw.tienda.model.Envio;
 
-@Service
-public class EnvioService {
+public interface EnvioService {
+    Envio guardar(Envio envio);
+    Envio buscarPorOrdenId(Long ordenId);
+    Envio buscarPorId(Long id);
 }
